@@ -11,6 +11,8 @@ const api_uri = require('../../config').api_uri;
 
 const currency = ['btc','etc','eth','xrp','bch'];
 
+// 6개의 통화만??
+
 var coinone_promise = function(){
     return new Promise((resolve,reject)=>{
         Request( api_uri.coinone ,(error,response,body) => {
@@ -52,7 +54,7 @@ var korbit_price = function(coin){
             if(error) reject(error);
             resolve({
                 price : JSON.parse(body).last,
-                coin : coin
+                coin
             });
             // last check
         })
@@ -64,9 +66,25 @@ var upbit_promise = function(coin){
     return new Promise((resolve,reject)=>{
         Request( api_uri.upbit + coin ,(error,response,body) => {
             if(error) reject(error);
-            resolve({
-                data : JSON.parse(body)
-            });
+            if( !!JSON.parse(body)[0] ){
+                resolve({
+                    price : JSON.parse(body),
+                    coin
+                });
+            }
+        })
+    })
+}
+var upbit_price = function(coin){
+    return new Promise((resolve,reject)=>{
+        Request( api_uri.upbit + coin ,(error,response,body) => {
+            if(error) reject(error);
+            if( !!JSON.parse(body)[0] ){
+                resolve({
+                    price : JSON.parse(body)[0].tradePrice,
+                    coin
+                });
+            }
         })
     })
 }
@@ -74,7 +92,8 @@ var upbit_promise = function(coin){
 const guide = (req,res) => {
     res.json({
         hello : "coin-zet",
-        api : "all / all_raw / coinone / bithumb / korbit / upbit",
+        api : "all / coinone / bithumb / korbit / upbit",
+        individually : "/coin/{coin_name}" ,
         korbit : '/korbit/ + btc / etc / eth / xrp / bch  / ex) korbit/btc',
         upbit : '/upbit/ + coin_short_name / ex) /upbit/btc '
     });
@@ -82,7 +101,10 @@ const guide = (req,res) => {
 
 const show_all_api = function(req,res){
     Promise.all([coinone_promise() , bithumb_promise() , 
-        korbit_price('btc'),korbit_price('etc'),korbit_price('eth'),korbit_price('xrp'),korbit_price('bch') 
+        korbit_price('btc'),korbit_price('etc'),korbit_price('eth'),korbit_price('xrp'),korbit_price('bch'),
+        upbit_price('btc'), upbit_price('eth'), upbit_price('qtum'), upbit_price('btg'), upbit_price('ltc'), 
+        upbit_price('etc'), upbit_price('dash'), upbit_price('zec'), upbit_price('xrp'), upbit_price('xmr')
+
     ])
     .catch((err) => {
         if(err) throw err;
@@ -112,33 +134,39 @@ const show_all_api = function(req,res){
         }
 
         // upbit
+        for( var u = 7 ; u < 17 ; u++){
+            var tmp = result[u].coin;
+            new_result[tmp].upbit = result[i].price.toString();
+        }
 
-        
-        // res.json(result);
-        // console.log(new_result['btc']);
+        return new_result;
+    })
+    .then((new_result)=>{
         if(req.params.coin_name){
-            res.json(new_result[req.params.coin_name]);    
+            new_result[req.params.coin_name] ? 
+            res.json(new_result[req.params.coin_name]) : 
+            res.json({'err' : '다시 한번 코인 이름을 확인하세요 ! ex) btc'})
         }else{
             res.json(new_result);
         }
-        
-
     })
     
 }
 const coin_name = show_all_api;
 
-const show_all_raw = function(req,res) {
-    Promise.all([coinone_promise() , bithumb_promise() , 
-        korbit_price('btc'),korbit_price('etc'),korbit_price('eth'),korbit_price('xrp'),korbit_price('bch') 
-    ])
-    .catch((err) => {
-        if(err) throw err;
-    })
-    .then((result) => {
-        res.json(result);
-    });
-}
+// const show_all_raw = function(req,res) {
+//     Promise.all([coinone_promise() , bithumb_promise() , 
+//         korbit_price('btc'),korbit_price('etc'),korbit_price('eth'),korbit_price('xrp'),korbit_price('bch'),
+//         upbit_promise('btc'), upbit_promise('eth'), upbit_promise('qtum'), upbit_promise('btg'), upbit_promise('ltc'), 
+//         upbit_promise('etc'), upbit_promise('dash'), upbit_promise('zec'), upbit_promise('xrp'), upbit_promise('xmr')
+//     ])
+//     .catch((err) => {
+//         if(err) throw err;
+//     })
+//     .then((result) => {
+//         res.json(result);
+//     });
+// }
 
 const see_coinone = function(req,res){
     coinone_promise()
@@ -156,13 +184,14 @@ const see_korbit = function(req,res){
     .catch((err) => {res.json(err)})
 }
 const see_upbit = function(req,res){
-    upbit_promise(req.params.coin)
+    upbit_price(req.params.coin)
     .then((result) => {res.json(result)})
     .catch((err) => {res.json(err)})
 }
 
 module.exports = {
-    guide , show_all_api , coin_name , show_all_raw , see_coinone , see_bithumb , see_korbit , see_upbit
+    guide , show_all_api , coin_name , see_coinone , see_bithumb , see_korbit , see_upbit 
+    // , show_all_raw
 };
 
 
