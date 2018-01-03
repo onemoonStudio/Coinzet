@@ -1,0 +1,25 @@
+Model
+    coin
+        schema
+        ctrl
+    user
+        schema
+        ctrl
+    community
+        schema
+        ctrl
+
+Middlewares
+    Not Yet
+
+router
+    router.js
+    api
+        api
+        api.ctrl
+    user
+        user
+        user.ctrl
+    community
+        community
+        community.ctrl
