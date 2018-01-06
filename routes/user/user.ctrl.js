@@ -1,6 +1,7 @@
 const UserModel = require('../../model/user/schema');
 
 function user_signup(req,res){
+
     // new UserModel({
     //     username: 'test',
     //     device_id : 't1',
@@ -10,7 +11,7 @@ function user_signup(req,res){
     //     }
     // }).save();
 
-    res.send('hello signup');
+    res.json({'message' : 'signup is done'});
 }
 
 function find_user(req,res){
@@ -25,7 +26,11 @@ function kakao_token(req,res){
     res.send('hello token');
 }
 
+function setting(req,res){
+    res.send('setting');
+}
+
 
 module.exports = {
-    user_signup , kakao_token , find_user
+    user_signup , kakao_token , find_user , setting
 };

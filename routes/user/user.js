@@ -6,7 +6,16 @@ router
     res.send('hello user');
 })
 .get('/find',ctrl.find_user)
-.get('/signup',ctrl.user_signup)
-.get('/kakao',ctrl.kakao_token)
+.get('/test',(req,res)=>{
+    res.writeHead(200,{'Content-Type' : 'text/html', 'server':'idb-cz'
+    });
+})
+
+router
+.post('/test',(req,res) => {
+    res.json(req.headers);
+})
+.post('/signup',ctrl.user_signup)
+.post('/setting',ctrl.setting)
 
 module.exports = router;

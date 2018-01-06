@@ -36,6 +36,13 @@ mongoose.connect(
   err => { console.error.bind(console,'Check DB - Connection error : '); }
 )
 
+// Post Check
+app.post('/*',(req,res,next)=>{
+  req.headers['server'] != config.server_header ? res.send('sorry your not our team') : 
+  // console.log('header check is done and it flows to post process');
+  next();
+})
+
 // Router
 app
 .use('/', router.basic)
@@ -62,4 +69,7 @@ app.use(function(err, req, res, next) {
   console.log(err);
 });
 
-module.exports = app;
+// module.exports = app;
+app.listen('3000',function(){
+  console.log('server is running at 3000');
+});
