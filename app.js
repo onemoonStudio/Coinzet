@@ -3,6 +3,9 @@ var path = require('path');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var no_favicon = require('express-no-favicons');
+var mongoose = require('mongoose');
+var config = require('./config');
 
 const router = require('./routes/router');
 
@@ -14,6 +17,24 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(no_favicon());
+
+// DataBase 
+const DB_options = {
+  autoIndex: false, // Don't build indexes
+  reconnectTries: Number.MAX_VALUE, // Never stop trying to reconnect
+  reconnectInterval: 500 , // Reconnect every 500ms
+  poolSize: 10 , // Maintain up to 10 socket connections
+  // If not connected, return errors immediately rather than waiting for reconnect
+  bufferMaxEntries: 0,
+  promiseLibrary: require('bluebird')
+}
+mongoose.connect(
+  `mongodb://${config.db_user}@ds121696.mlab.com:21696/idb-back`
+  , DB_options ).then(
+  () => { console.log('DataBase is connected'); } ,
+  err => { console.error.bind(console,'Check DB - Connection error : '); }
+)
 
 // Router
 app
