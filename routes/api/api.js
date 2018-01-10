@@ -9,6 +9,6 @@ router.get('/',ctrl.guide)
 .get('/korbit/:coin',ctrl.see_korbit)
 .get('/upbit/:coin',ctrl.see_upbit)
 .get('/coin/:coin_name',ctrl.coin_name)
-
+.get('/test' , ctrl.test)
 
 module.exports = router;

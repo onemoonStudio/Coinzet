@@ -89,6 +89,27 @@ var upbit_price = function(coin){
     })
 }
 
+var coinpan = function(s_time){
+    return new Promise((resolve,reject)=>{
+        Request( api_uri.coinpan + s_time , (err,response,body)=>{
+            err ? reject(err) : 
+            resolve(body);
+        } )
+    })
+}
+
+const test = (req,res) => {
+    var temp = Date.parse(new Date())/1000;
+    // console.log(temp);
+    coinpan(temp)
+    .then((result) => {
+        res.send(result);
+    })
+    .catch((err) => {
+        throw err;
+    })
+}
+
 const guide = (req,res) => {
     res.json({
         hello : "coin-zet",
@@ -190,7 +211,8 @@ const see_upbit = function(req,res){
 }
 
 module.exports = {
-    guide , show_all_api , coin_name , see_coinone , see_bithumb , see_korbit , see_upbit 
+    guide , show_all_api , coin_name , see_coinone , see_bithumb , see_korbit , see_upbit ,
+    test
     // , show_all_raw
 };
 

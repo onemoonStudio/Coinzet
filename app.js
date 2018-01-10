@@ -47,6 +47,7 @@ app.post('/*',(req,res,next)=>{
 app
 .use('/', router.basic)
 .use('/api', router.api)
+.use('/api_v2',router.api_v2)
 .use('/user', router.user)
 .use('/community', router.community)
 
