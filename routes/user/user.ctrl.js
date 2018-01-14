@@ -1,36 +1,51 @@
 const UserModel = require('../../model/user/schema');
 
-function user_signup(req,res){
+class userCtrlClass{
 
-    // new UserModel({
-    //     username: 'test',
-    //     device_id : 't1',
-    //     kakao : {
-    //         provider: 'kakao',
-    //         nickname : 'hello_world'
-    //     }
-    // }).save();
+    // GET
+    static find_user(req,res){
+        UserModel.find().exec((err,data)=>{
+            err ? console.log(err) : 
+            res.json(data);
+        });   
+    }
 
-    res.json({'message' : 'signup is done'});
+    static find_user_device_id(req,res){
+        var target = req.params.device_id;
+
+        UserModel.findOne({device_id : target}).exec((err,data) => {
+            if(err) res.json({'err' : 'err is occurred check server'});
+            data == null ? 
+            res.json({'sorry' : 'user is not exist , or check device_id'}) :
+            res.json(data);
+        })
+    }
+
+    // POST
+    static user_signup(req,res){
+    
+        var tmpObj = {
+            username: req.body.username,
+            device_id : req.body.device_id || null ,
+            kakao : {
+                id: req.body.kakao_id,
+                nickname : req.body.kakao_nickname
+            }
+        }
+    
+        new UserModel(tmpObj).save( (err) => {
+            if(err) {
+                res.json({'err' : 'signup is failled'});
+            }else{
+                res.json({'ok' : 'signup is done'});
+            }
+        });
+    }
+
+    static setting(req,res){
+        res.send('setting');
+    }
 }
 
-function find_user(req,res){
-    UserModel.find().exec((err,data)=>{
-        err ? console.log(err) : 
-        res.json(data);
-    });
 
-}
-
-function kakao_token(req,res){
-    res.send('hello token');
-}
-
-function setting(req,res){
-    res.send('setting');
-}
-
-
-module.exports = {
-    user_signup , kakao_token , find_user , setting
-};
+module.exports = userCtrlClass;

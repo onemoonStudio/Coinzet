@@ -12,7 +12,8 @@ var options = {
     "headers": {
       "Connection":"Keep-Alive"
     }
-  };
+};
+
 function Coin_value_by_provider(krw,updown,percent,volume){
     this.price = krw;
     this.updown = updown;
