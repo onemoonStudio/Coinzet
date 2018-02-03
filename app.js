@@ -70,7 +70,7 @@ app.use(function(err, req, res, next) {
   console.log(err);
 });
 
-// module.exports = app;
-app.listen('3000',function(){
-  console.log('server is running at 3000');
+app.set('port',3000);
+app.listen(app.get('port'),function(){
+  console.log('server is running at ' + app.get('port'));
 });
